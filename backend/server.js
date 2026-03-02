@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
     host: 'localhost',      // หรือ 127.0.0.1
     user: 'root',           // User ของ MySQL Workbench
-    password: 'your_password', // รหัสผ่าน MySQL ของคุณ
+    password: '1234', // รหัสผ่าน MySQL ของคุณ
     database: 'mobile_db'   // ชื่อ Database ที่สร้างไว้
 });
 
@@ -35,6 +35,29 @@ app.post('/login', (req, res) => {
         } else {
             res.status(401).json({ message: "Username หรือ Password ไม่ถูกต้อง" });
         }
+    });
+});
+
+// เพิ่ม API สำหรับ Register
+app.post('/register', (req, res) => {
+    const { username, password, firstName, lastName, phone, email, image } = req.body;
+
+    // ตรวจสอบว่ามี User ซ้ำหรือไม่
+    const checkUser = "SELECT * FROM users WHERE username = ?";
+    db.query(checkUser, [username], (err, results) => {
+        if (results.length > 0) {
+            return res.status(400).json({ message: "Username นี้ถูกใช้ไปแล้ว" });
+        }
+
+        // เพิ่มข้อมูลลงฐานข้อมูล (อย่าลืมสร้างคอลัมน์ใน MySQL ให้ครบนะครับ)
+        const query = "INSERT INTO users (username, password, first_name, last_name, phone, email, image) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        db.query(query, [username, password, firstName, lastName, phone, email, image || null], (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+            }
+            res.status(200).json({ message: "สมัครสมาชิกสำเร็จ!" });
+        });
     });
 });
 
