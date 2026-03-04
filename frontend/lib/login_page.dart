@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config.dart';
 import 'main.dart'; // เพื่อใช้ buildInput
 import 'register_page.dart';
 import 'home_page.dart';
@@ -18,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     try {
       final res = await http.post(
-        Uri.parse('http://10.0.2.2:3000/login'),
+        Uri.parse('${Config.baseUrl}/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": _user.text, "password": _pass.text}),
       );

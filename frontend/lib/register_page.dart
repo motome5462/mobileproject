@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'config.dart';
 import 'main.dart'; // เพื่อใช้ buildInput
 
 class RegisterPage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
     
     try {
       final res = await http.post(
-        Uri.parse('http://10.0.2.2:3000/register'),
+        Uri.parse('${Config.baseUrl}/register'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "username": _u.text, "password": _p.text, "firstName": _f.text,
