@@ -48,6 +48,21 @@ app.post('/register', (req, res) => {
         if (results.length > 0) {
             return res.status(400).json({ message: "Username นี้ถูกใช้ไปแล้ว" });
         }
+        // เช็คชื่อ-นามสกุลห้ามมีตัวเลข
+    const namePattern = /^[a-zA-Zก-ฮะ-์\s]+$/;
+    if (!namePattern.test(firstName) || !namePattern.test(lastName)) {
+        return res.status(400).json({ message: "ชื่อและนามสกุลห้ามมีตัวเลข" });
+    }
+
+    // เช็คเบอร์โทรต้องเป็นตัวเลข
+    if (isNaN(phone)) {
+        return res.status(400).json({ message: "เบอร์โทรต้องเป็นตัวเลขเท่านั้น" });
+    }
+
+    // เช็คอีเมลมี @
+    if (!email.includes('@')) {
+        return res.status(400).json({ message: "อีเมลไม่ถูกต้อง" });
+    }
 
         // เพิ่มข้อมูลลงฐานข้อมูล (อย่าลืมสร้างคอลัมน์ใน MySQL ให้ครบนะครับ)
         const query = "INSERT INTO users (username, password, first_name, last_name, phone, email, image) VALUES (?, ?, ?, ?, ?, ?, ?)";
