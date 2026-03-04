@@ -76,6 +76,25 @@ app.post('/register', (req, res) => {
     });
 });
 
+// ดึงรายการห้องประชุมทั้งหมดพร้อมสถานะปัจจุบัน
+app.get('/rooms-status', (req, res) => {
+    const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
+    // Query นี้จะเช็คว่าเวลาปัจจุบัน อยู่ระหว่าง start_time และ end_time ของการจองไหม
+    const query = `
+        SELECT r.*, 
+        (SELECT COUNT(*) FROM bookings b 
+         WHERE b.room_id = r.id 
+         AND ? BETWEEN b.start_time AND b.end_time 
+         AND b.status = 'approved') as is_busy
+        FROM rooms r`;
+
+    db.query(query, [now], (err, results) => {
+        if (err) return res.status(500).send(err);
+        res.json(results);
+    });
+});
+
 // 3. เริ่มรัน Server
 const PORT = 3000;
 app.listen(PORT, () => {
